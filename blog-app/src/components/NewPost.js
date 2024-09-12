@@ -96,7 +96,7 @@ const NewPost = ({ addPost }) => {
 
     try {
       // Send post data to backend
-      const response = await axios.post('http://localhost:5000/api/posts', newPost);
+      const response = await axios.post('https://blogapp-lyart.vercel.app/api/posts', newPost);
       addPost(response.data); // Add the post in the frontend state
       alert('Post added successfully!');
       setTitle('');
