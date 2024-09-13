@@ -9,6 +9,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(cors({
+  origin: 'https://blogapp-bani.vercel.app', // Frontend Vercel domain
+}));
+
+// Other middleware
+app.use(express.json());
+
 // Connect to MongoDB
 connectDB();
 
