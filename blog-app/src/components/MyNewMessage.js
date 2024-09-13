@@ -14,7 +14,7 @@ const MyNewMessage = () => {
     const fetchPosts = async () => {
       try {
         // Replace 'http://localhost:5000' with your Vercel backend URL
-        const response = await axios.get('https://blogapp-lyart.vercel.app/api/posts');
+        const response = await axios.get('https://blogapp-xyqa.vercel.app/api/posts');
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -27,7 +27,7 @@ const MyNewMessage = () => {
   const handleDelete = async (id) => {
     try {
       // Update delete request URL to point to the deployed backend
-      await axios.delete(`https://blogapp-lyart.vercel.app/api/posts/${id}`);
+      await axios.delete(`https://blogapp-xyqa.vercel.app/api/posts/${id}`);
       setPosts(posts.filter((post) => post._id !== id));
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -49,7 +49,7 @@ const MyNewMessage = () => {
       };
 
       // Update the URL for saving edited posts
-      await axios.put(`https://blogapp-lyart.vercel.app/api/posts/${currentPost._id}`, updatedPost);
+      await axios.put(`https://blogapp-xyqa.vercel.app/api/posts/${currentPost._id}`, updatedPost);
       setPosts(posts.map((post) => (post._id === currentPost._id ? { ...post, ...updatedPost } : post)));
       setIsEditing(false);
       setCurrentPost(null);
