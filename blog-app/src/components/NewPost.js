@@ -67,6 +67,7 @@
 // export default NewPost;
 
 
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import './NewPost.css';
@@ -88,15 +89,21 @@ const NewPost = ({ addPost }) => {
 
     setError('');
 
-    const newPost = {
-      title,
-      content,
-      image: image ? URL.createObjectURL(image) : null,
-    };
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('content', content);
+    if (image) {
+      formData.append('image', image);
+    }
 
     try {
       // Send post data to backend
-      const response = await axios.post('https://blogapp-lyart.vercel.app/api/posts', newPost);
+      const response = await axios.post('https://blogapp-gray-phi.vercel.app/api/posts', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       addPost(response.data); // Add the post in the frontend state
       alert('Post added successfully!');
       setTitle('');
@@ -118,11 +125,13 @@ const NewPost = ({ addPost }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Post Title"
+            required
           />
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Post Content"
+            required
           ></textarea>
           <input
             type="file"
