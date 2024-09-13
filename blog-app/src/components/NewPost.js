@@ -28,7 +28,7 @@ const NewPost = ({ addPost }) => {
 
     try {
       // Send post data to backend
-      const response = await axios.post('https://blogapp-gray-phi.vercel.app/api/posts', formData, {
+      const response = await axios.post('https://blogapp-xyqa.vercel.app/api/posts', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
