@@ -85,95 +85,68 @@
 // };
 
 // export default MyNewMessage;
+
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './MyNewMessage.css';
+import './MyNewMessage.css'; // Make sure to style the buttons and posts here
 
 const MyNewMessage = () => {
   const [posts, setPosts] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentPost, setCurrentPost] = useState(null);
-  const [editTitle, setEditTitle] = useState('');
-  const [editContent, setEditContent] = useState('');
+
+  // Fetch posts from the backend API deployed on Vercel
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get('https://blogapp-gray-phi.vercel.app/api/posts');
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+
+  // Delete post by ID
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`https://blogapp-gray-phi.vercel.app/api/posts/${id}`);
+      setPosts(posts.filter(post => post._id !== id)); // Remove the deleted post from the list
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/posts');
-        setPosts(response.data);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      }
-    };
-
     fetchPosts();
   }, []);
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/posts/${id}`);
-      setPosts(posts.filter((post) => post._id !== id));
-    } catch (error) {
-      console.error('Error deleting post:', error);
-    }
-  };
-
-  const handleEdit = (post) => {
-    setIsEditing(true);
-    setCurrentPost(post);
-    setEditTitle(post.title);
-    setEditContent(post.content);
-  };
-
-  const handleSave = async () => {
-    try {
-      const updatedPost = {
-        title: editTitle,
-        content: editContent,
-      };
-
-      await axios.put(`http://localhost:5000/api/posts/${currentPost._id}`, updatedPost);
-      setPosts(posts.map((post) => (post._id === currentPost._id ? { ...post, ...updatedPost } : post)));
-      setIsEditing(false);
-      setCurrentPost(null);
-    } catch (error) {
-      console.error('Error updating post:', error);
-    }
-  };
-
   return (
-    <div className="message-container">
-      {isEditing ? (
-        <div className="edit-form">
-          <h3>Edit Post</h3>
-          <input
-            type="text"
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            placeholder="Edit Title"
-          />
-          <textarea
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            placeholder="Edit Content"
-          ></textarea>
-          <button onClick={handleSave}>Save Changes</button>
-        </div>
-      ) : posts.length === 0 ? (
-        <h2>No added posts</h2>
+    <div className="my-new-message-container">
+      <h2>My New Messages</h2>
+      {posts.length === 0 ? (
+        <p className="no-posts-message">No added posts</p>
       ) : (
-        posts.map((post) => (
-          <div className="post-item" key={post._id}>
-            <h3>{post.title}</h3>
-            {post.image && <img src={post.image} alt="Post" className="post-image" />}
-            <p>{post.content}</p>
-            <button className="edit-button" onClick={() => handleEdit(post)}>Edit Post</button>
-            <button className="delete-button" onClick={() => handleDelete(post._id)}>Delete Post</button>
-          </div>
-        ))
+        <div className="posts-list">
+          {posts.map((post, index) => (
+            <div key={post._id} className="post-item">
+              <h3>{post.title}</h3>
+              {post.image && <img src={post.image} alt={post.title} className="post-image" />}
+              <p>{post.content}</p>
+              <div className="post-actions">
+                <button 
+                  className="delete-button" 
+                  onClick={() => handleDelete(post._id)}
+                >
+                  Delete
+                </button>
+                {/* If you reintroduce the edit functionality, you can add the handleEdit function */}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 };
 
 export default MyNewMessage;
+
+
