@@ -86,31 +86,21 @@
 
 // export default MyNewMessage;
 
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './MyNewMessage.css'; // Make sure to style the buttons and posts here
 
 const MyNewMessage = () => {
   const [posts, setPosts] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [editPostData, setEditPostData] = useState(null);
 
-  // Fetch posts from the backend API deployed on Vercel
+  // Fetch posts
   const fetchPosts = async () => {
     try {
-      const response = await axios.get('https://blogapp-gray-phi.vercel.app/api/posts');
+      const response = await axios.get('https://blogapp-dwnf.vercel.app/api/posts');
       setPosts(response.data);
     } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
-
-  // Delete post by ID
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`https://blogapp-gray-phi.vercel.app/api/posts/${id}`);
-      setPosts(posts.filter(post => post._id !== id)); // Remove the deleted post from the list
-    } catch (error) {
-      console.error("Error deleting post:", error);
+      console.error('Error fetching posts:', error);
     }
   };
 
@@ -118,29 +108,54 @@ const MyNewMessage = () => {
     fetchPosts();
   }, []);
 
+  const handleEdit = (post) => {
+    setEditPostData(post);
+    setEditMode(true);
+  };
+
+  const handleDelete = async (postId) => {
+    try {
+      await axios.delete(`https://blogapp-dwnf.vercel.app/api/posts/${postId}`);
+      setPosts(posts.filter(post => post._id !== postId));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  const handleUpdate = async (updatedPost) => {
+    try {
+      const response = await axios.put(`https://blogapp-dwnf.vercel.app/api/posts/${updatedPost._id}`, updatedPost);
+      setPosts(posts.map(post => post._id === updatedPost._id ? response.data : post));
+      setEditMode(false);
+      setEditPostData(null);
+    } catch (error) {
+      console.error('Error updating post:', error);
+    }
+  };
+
   return (
-    <div className="my-new-message-container">
+    <div>
       <h2>My New Messages</h2>
-      {posts.length === 0 ? (
-        <p className="no-posts-message">No added posts</p>
+      {editMode ? (
+        <div>
+          <h3>Edit Post</h3>
+          {/* Add a form to edit the post */}
+        </div>
       ) : (
-        <div className="posts-list">
-          {posts.map((post, index) => (
-            <div key={post._id} className="post-item">
-              <h3>{post.title}</h3>
-              {post.image && <img src={post.image} alt={post.title} className="post-image" />}
-              <p>{post.content}</p>
-              <div className="post-actions">
-                <button 
-                  className="delete-button" 
-                  onClick={() => handleDelete(post._id)}
-                >
-                  Delete
-                </button>
-                {/* If you reintroduce the edit functionality, you can add the handleEdit function */}
+        <div>
+          {posts.length === 0 ? (
+            <p>No posts available</p>
+          ) : (
+            posts.map(post => (
+              <div key={post._id}>
+                <h3>{post.title}</h3>
+                {post.imageUrl && <img src={post.imageUrl} alt={post.title} />}
+                <p>{post.content}</p>
+                <button onClick={() => handleEdit(post)}>Edit</button>
+                <button onClick={() => handleDelete(post._id)}>Delete</button>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
     </div>
@@ -148,5 +163,3 @@ const MyNewMessage = () => {
 };
 
 export default MyNewMessage;
-
-
